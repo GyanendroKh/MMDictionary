@@ -16,4 +16,9 @@
   <string name="nav_home">Home</string>
   <string name="nav_about_me">About Me</string>
   <string name="nav_share">Share</string>
+
+  <string name="browse_choose">Choose a language…</string>
+  <string name="language_eng">English</string>
+  <string name="langugae_mani">Meitei Mayek</string>
+  <string name="language_beng">Bengali</string>
 </resources>
