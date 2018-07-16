@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_develop_by"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:gravity="center_vertical|center_horizontal"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/developed_w_by_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingEnd="3dp"
+        android:paddingStart="0dp"
+        android:text="@string/devWithBy1"
+        android:textColor="#fff"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/developByLove"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/developed_w_by_1"
+        app:srcCompat="@drawable/ic_favorite"
+        android:contentDescription="@string/love"/>
+
+    <TextView
+        android:id="@+id/developed_w_by_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/developByLove"
+        android:paddingEnd="0dp"
+        android:paddingStart="3dp"
+        android:text="@string/devWithBy2"
+        android:textColor="#fff"
+        android:textSize="15sp" />
+
+</RelativeLayout>
