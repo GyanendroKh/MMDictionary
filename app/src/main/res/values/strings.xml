@@ -19,6 +19,6 @@
 
   <string name="browse_choose">Choose a language…</string>
   <string name="language_eng">English</string>
-  <string name="langugae_mani">Meitei Mayek</string>
+  <string name="language_mani">Meitei Mayek</string>
   <string name="language_beng">Bengali</string>
 </resources>
