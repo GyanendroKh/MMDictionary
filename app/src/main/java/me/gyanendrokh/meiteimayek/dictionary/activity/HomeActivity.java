@@ -1,5 +1,6 @@
 package me.gyanendrokh.meiteimayek.dictionary.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -98,6 +99,7 @@ public class HomeActivity extends AppCompatActivity
 
     switch(item.getItemId()) {
       case R.id.nav_about:
+        startActivity(new Intent(getApplicationContext(), AboutMeActivity.class));
         return false;
     }
 
