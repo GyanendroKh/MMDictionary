@@ -18,8 +18,14 @@ public class BrowseAdapter extends WordListAdapter {
   }
 
   @Override
-  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    this.mItem = (WordListItem)holder;
+  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+    if(viewHolder instanceof WordListItem.Loading) {
+      WordListItem.Loading holder = (WordListItem.Loading) viewHolder;
+      holder.vProgressBar.setIndeterminate(true);
+      return;
+    }
+
+    this.mItem = (WordListItem)viewHolder;
 
     this.mItem.setBtnImg(R.drawable.ic_add);
     this.mItem.setPrimaryText(super.getItem(position).getWord());
