@@ -3,6 +3,7 @@ package me.gyanendrokh.meiteimayek.dictionary.adapter;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
@@ -16,8 +17,10 @@ public abstract class WordListAdapter extends RecyclerView.Adapter<RecyclerView.
   private final int LOADING_ITEM = 1;
 
   private List<Word> mWords;
+  private OnItemClickListener mOnClickListener = null;
 
-  public WordListAdapter(List<Word> words) {
+
+  WordListAdapter(List<Word> words) {
     this.mWords = words;
   }
 
@@ -45,6 +48,18 @@ public abstract class WordListAdapter extends RecyclerView.Adapter<RecyclerView.
 
   public Word getItem(int index) {
     return mWords.get(index);
+  }
+
+  public interface OnItemClickListener {
+    void onClick(View view, int position);
+  }
+
+  public void setOnItemClickListener(OnItemClickListener listener) {
+    this.mOnClickListener = listener;
+  }
+
+  OnItemClickListener getItemClickListener() {
+    return this.mOnClickListener;
   }
 
 }

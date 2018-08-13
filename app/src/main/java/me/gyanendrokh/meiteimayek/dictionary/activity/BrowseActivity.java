@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -69,6 +70,10 @@ public class BrowseActivity extends AppCompatActivity {
       mIsLoading = true;
       mResults.remove(null);
       fetchData();
+    });
+
+    mListAdapter.setOnItemClickListener((view, position) -> {
+      Toast.makeText(BrowseActivity.this, mListAdapter.getItem(position).getWord(), Toast.LENGTH_SHORT).show();
     });
   }
 

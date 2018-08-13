@@ -11,8 +11,6 @@ import me.gyanendrokh.meiteimayek.dictionary.ui.WordListItem;
 
 public class BrowseAdapter extends WordListAdapter {
 
-  private WordListItem mItem;
-
   public BrowseAdapter(List<Word> words) {
     super(words);
   }
@@ -25,11 +23,14 @@ public class BrowseAdapter extends WordListAdapter {
       return;
     }
 
-    this.mItem = (WordListItem)viewHolder;
+    WordListItem item = (WordListItem)viewHolder;
 
-    this.mItem.setBtnImg(R.drawable.ic_add);
-    this.mItem.setPrimaryText(super.getItem(position).getWord());
-    this.mItem.setSecondaryText("");
+    item.setBtnImg(R.drawable.ic_add);
+    item.setPrimaryText(super.getItem(position).getWord());
+    item.setSecondaryText("");
+    item.setOnClickListener((view) -> {
+      if(getItemClickListener() != null) getItemClickListener().onClick(view, position);
+    });
   }
 
 }
