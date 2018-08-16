@@ -1,6 +1,8 @@
 package me.gyanendrokh.meiteimayek.dictionary.data;
 
-public class Word {
+import java.io.Serializable;
+
+public class Word implements Serializable {
 
   private int mWordId;
   private String mWord;
@@ -14,12 +16,14 @@ public class Word {
     this.mLang = lang;
   }
 
-  public void setDesc(String desc) {
+  public Word setDesc(String desc) {
     this.mDesc = desc;
+    return this;
   }
 
-  public void setReadAs(String readAs) {
+  public Word setReadAs(String readAs) {
     this.mReadAs = readAs;
+    return this;
   }
 
   public int getWordId() {
