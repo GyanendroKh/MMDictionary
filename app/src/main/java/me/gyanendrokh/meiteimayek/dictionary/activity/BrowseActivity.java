@@ -24,6 +24,7 @@ import me.gyanendrokh.meiteimayek.dictionary.api.Words;
 import me.gyanendrokh.meiteimayek.dictionary.data.Language;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
 import me.gyanendrokh.meiteimayek.dictionary.exception.LanguageNotExistException;
+import me.gyanendrokh.meiteimayek.dictionary.fragment.BrowseDescFragment;
 import me.gyanendrokh.meiteimayek.dictionary.ui.WordList;
 
 
@@ -72,9 +73,14 @@ public class BrowseActivity extends AppCompatActivity {
       fetchData();
     });
 
-    mListAdapter.setOnItemClickListener((view, position) -> {
-      Toast.makeText(BrowseActivity.this, mListAdapter.getItem(position).getWord(), Toast.LENGTH_SHORT).show();
-    });
+    mListAdapter.setOnItemClickListener(
+      (view, position) -> {
+        Toast.makeText(BrowseActivity.this, mListAdapter.getItem(position).getWord(), Toast.LENGTH_SHORT).show();
+
+        BrowseDescFragment.createFragment(mListAdapter.getItem(position)).show(getSupportFragmentManager(), getClass().getName());
+      }
+
+    );
   }
 
   private void initViews() {
