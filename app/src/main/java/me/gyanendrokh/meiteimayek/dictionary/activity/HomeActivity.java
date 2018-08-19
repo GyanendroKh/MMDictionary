@@ -17,6 +17,7 @@ import com.lapism.searchview.widget.SearchView;
 
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.adapter.HomePagerAdapter;
+import me.gyanendrokh.meiteimayek.dictionary.data.Language;
 
 public class HomeActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +55,11 @@ public class HomeActivity extends AppCompatActivity
       public boolean onQueryTextSubmit(CharSequence query) {
         mSearchView.setQuery("", false);
         mSearchView.close();
+
+        Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+        intent.putExtra(SearchActivity.KEYWORD, query.toString());
+        intent.putExtra(SearchActivity.LANG, Language.ENGLISH);
+        startActivity(intent);
 
         return true;
       }
