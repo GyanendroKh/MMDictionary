@@ -23,6 +23,10 @@ public class Word {
   @ColumnInfo(name = "read_as")
   private String mReadAs;
 
+  public void setId(int mId) {
+    this.mId = mId;
+  }
+
   public void setWord(String word) {
     this.mWord = word;
   }
