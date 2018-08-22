@@ -46,4 +46,22 @@ public class Word implements Serializable {
     return this.mReadAs;
   }
 
+  public static me.gyanendrokh.meiteimayek.dictionary.database.Word convert(Word w) {
+    me.gyanendrokh.meiteimayek.dictionary.database.Word word = new me.gyanendrokh.meiteimayek.dictionary.database.Word();
+    word.setWord(w.getWord());
+    word.setLang(w.getLang());
+    word.setDesc(w.getDesc());
+    word.setReadAs(w.getReadAs());
+
+    return word;
+  }
+
+  public static Word convert(me.gyanendrokh.meiteimayek.dictionary.database.Word w) {
+    Word word = new Word(w.getId(), w.getWord(), w.getLang());
+    word.setDesc(w.getDesc());
+    word.setReadAs(w.getReadAs());
+
+    return word;
+  }
+
 }
