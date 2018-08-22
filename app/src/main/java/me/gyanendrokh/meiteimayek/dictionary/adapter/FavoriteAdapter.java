@@ -6,35 +6,35 @@ import android.support.v7.widget.RecyclerView;
 import java.util.List;
 
 import me.gyanendrokh.meiteimayek.dictionary.R;
+import me.gyanendrokh.meiteimayek.dictionary.data.Language;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
+import me.gyanendrokh.meiteimayek.dictionary.exception.LanguageNotExistException;
 import me.gyanendrokh.meiteimayek.dictionary.ui.WordListItem;
 
-public class BrowseAdapter extends WordListAdapter {
+public class FavoriteAdapter extends WordListAdapter {
 
   private OnActBtnClicked mOnClicked = null;
 
-  public BrowseAdapter(List<Word> words) {
+  public FavoriteAdapter(List<Word> words) {
     super(words);
   }
 
   @Override
-  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-    if(viewHolder instanceof WordListItem.Loading) {
-      WordListItem.Loading holder = (WordListItem.Loading) viewHolder;
-      holder.vProgressBar.setIndeterminate(true);
-      return;
+  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    WordListItem item = (WordListItem)holder;
+
+    item.setBtnImg(R.drawable.ic_delete);
+    item.setPrimaryText(super.getItem(position).getWord());
+    try {
+      item.setSecondaryText(Language.getLanguages()[Language.Code.get(super.getItem(position).getLang())]);
+    } catch (LanguageNotExistException e) {
+      e.printStackTrace();
     }
 
-    WordListItem item = (WordListItem)viewHolder;
-
-    item.setBtnImg(R.drawable.ic_add);
-    item.setPrimaryText(super.getItem(position).getWord());
-    item.setSecondaryText("");
     item.setOnBtnClicked((view) -> {
-      if(mOnClicked != null) {
-        mOnClicked.onClick(position);
-      }
+      if(mOnClicked != null) mOnClicked.onClick(position);
     });
+
     item.setOnClickListener((view) -> {
       if(getItemClickListener() != null) getItemClickListener().onClick(view, position);
     });

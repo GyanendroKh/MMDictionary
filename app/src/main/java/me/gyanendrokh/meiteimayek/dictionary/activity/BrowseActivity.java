@@ -17,12 +17,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.adapter.BrowseAdapter;
 import me.gyanendrokh.meiteimayek.dictionary.api.Request;
 import me.gyanendrokh.meiteimayek.dictionary.api.Words;
 import me.gyanendrokh.meiteimayek.dictionary.data.Language;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
+import me.gyanendrokh.meiteimayek.dictionary.database.FavoriteDatabase;
 import me.gyanendrokh.meiteimayek.dictionary.exception.LanguageNotExistException;
 import me.gyanendrokh.meiteimayek.dictionary.fragment.BrowseDescFragment;
 import me.gyanendrokh.meiteimayek.dictionary.ui.WordList;
@@ -74,12 +78,43 @@ public class BrowseActivity extends AppCompatActivity {
     });
 
     mListAdapter.setOnItemClickListener(
-      (view, position) -> {
-        Toast.makeText(BrowseActivity.this, mListAdapter.getItem(position).getWord(), Toast.LENGTH_SHORT).show();
+      (view, position) -> BrowseDescFragment.createFragment(mListAdapter.getItem(position)).show(getSupportFragmentManager(), getClass().getName())
+    );
 
-        BrowseDescFragment.createFragment(mListAdapter.getItem(position)).show(getSupportFragmentManager(), getClass().getName());
+    mListAdapter.setOnActBtnClicked(
+      position -> {
+        Word w = mResults.get(position);
+
+        me.gyanendrokh.meiteimayek.dictionary.api.Word wA = me.gyanendrokh.meiteimayek.dictionary.api.Word.getInstance(BrowseActivity.this);
+        wA.setData(w.getWord(), w.getLang());
+        wA.fetch(new Request.Listener<JSONObject>() {
+          @Override
+          public void onResponse(JSONObject response) {
+            try {
+              String desc = response.getString("description");
+              String readAs = response.getString("read_as");
+              new CompositeDisposable().add(Observable.just(FavoriteDatabase.getInstance(getApplicationContext()))
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(
+                  fav -> {
+                    fav.getDao().addWord(Word.convert(mResults.get(position).setDesc(desc).setReadAs(readAs)));
+                    runOnUiThread(() ->
+                      Toast.makeText(BrowseActivity.this, "Added to Favorite...", Toast.LENGTH_SHORT).show()
+                    );
+                  }, error -> runOnUiThread(
+                    () -> Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show()
+                  )));
+            } catch (JSONException e) {
+              Toast.makeText(BrowseActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+          }
+
+          @Override
+          public void onError(VolleyError error) {
+            Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+          }
+        });
       }
-
     );
   }
 
@@ -120,7 +155,8 @@ public class BrowseActivity extends AppCompatActivity {
 
       @Override
       public void onError(VolleyError error) {
-
+        Toast.makeText(BrowseActivity.this, String.valueOf(error.getNetworkTimeMs()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
       }
     });
   }
