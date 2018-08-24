@@ -13,9 +13,13 @@ public class FavoriteDescFragment extends WordDescFragment {
 
     FavoriteDescFragment frag = new FavoriteDescFragment();
     frag.setArguments(bundle);
-    frag.setActBtnIcon(R.drawable.ic_delete);
 
     return frag;
+  }
+
+  @Override
+  public void init() {
+    setActBtnIcon(R.drawable.ic_delete);
   }
 
   @Override

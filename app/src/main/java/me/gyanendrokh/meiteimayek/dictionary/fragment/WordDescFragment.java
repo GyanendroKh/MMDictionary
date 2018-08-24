@@ -52,6 +52,7 @@ public abstract class WordDescFragment extends BottomSheetDialogFragment {
     this.mActBtn = view.findViewById(R.id.sheet_action_btn);
 
     setData();
+    init();
     return view;
   }
 
@@ -70,6 +71,8 @@ public abstract class WordDescFragment extends BottomSheetDialogFragment {
       }
     );
   }
+
+  public abstract void init();
 
   public void setLoaded() {
     this.mProgressBar.setVisibility(View.GONE);

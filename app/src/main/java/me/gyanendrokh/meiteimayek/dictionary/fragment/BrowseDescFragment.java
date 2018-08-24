@@ -25,6 +25,11 @@ public class BrowseDescFragment extends WordDescFragment {
   }
 
   @Override
+  public void init() {
+
+  }
+
+  @Override
   public void fetch(OnDataFetched fetch) {
     Word w = Word.getInstance(getActivity());
     w.setData(super.getData().getWord(), super.getData().getLang());
