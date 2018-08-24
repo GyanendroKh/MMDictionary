@@ -18,10 +18,33 @@ public abstract class WordListAdapter extends RecyclerView.Adapter<RecyclerView.
 
   private List<Word> mWords;
   private OnItemClickListener mOnClickListener = null;
-
+  private OnActBtnClickListener mOnActBtnClickListener = null;
 
   WordListAdapter(List<Word> words) {
     this.mWords = words;
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
+    if(viewHolder instanceof WordListItem.Loading) {
+      WordListItem.Loading holder = (WordListItem.Loading) viewHolder;
+      holder.vProgressBar.setIndeterminate(true);
+      return;
+    }
+
+    WordListItem item = (WordListItem)viewHolder;
+
+    item.setBtnImg(getBtnImg());
+    item.setPrimaryText(getPrimaryText(position));
+    item.setSecondaryText(getSecondaryText(position));
+
+    item.setOnClickListener((view) -> {
+      if(getItemClickListener() != null) getItemClickListener().onClick(view, position);
+    });
+
+    item.setOnBtnClicked((view) -> {
+      if(getActBtnClickListener() != null) getActBtnClickListener().onClick(position);
+    });
   }
 
   @NonNull
@@ -54,12 +77,30 @@ public abstract class WordListAdapter extends RecyclerView.Adapter<RecyclerView.
     void onClick(View view, int position);
   }
 
+  public interface OnActBtnClickListener {
+    void onClick(int position);
+  }
+
   public void setOnItemClickListener(OnItemClickListener listener) {
     this.mOnClickListener = listener;
   }
 
+  public void setOnActBtnClicked(OnActBtnClickListener l) {
+    this.mOnActBtnClickListener = l;
+  }
+
+  abstract int getBtnImg();
+
+  abstract String getPrimaryText(int position);
+
+  abstract String getSecondaryText(int position);
+
   OnItemClickListener getItemClickListener() {
     return this.mOnClickListener;
+  }
+
+  OnActBtnClickListener getActBtnClickListener() {
+    return this.mOnActBtnClickListener;
   }
 
 }
