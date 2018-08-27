@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <group
+    android:checkableBehavior="single">
+
+    <item
+      android:id="@+id/search_mani"
+      android:title="Meitei Mayek"
+      android:checkable="true"
+      android:checked="false" />
+
+    <item
+      android:id="@+id/search_eng"
+      android:checkable="true"
+      android:checked="true"
+      android:title="English" />
+
+    <item
+      android:id="@+id/search_beng"
+      android:checkable="true"
+      android:checked="false"
+      android:title="Bengali" />
+
+  </group>
+</menu>

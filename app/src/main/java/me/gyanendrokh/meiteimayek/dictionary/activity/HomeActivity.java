@@ -9,6 +9,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -26,7 +27,7 @@ public class HomeActivity extends AppCompatActivity
   private SearchView mSearchView;
 
   private long mLastBackPressed = 0;
-
+  private String mSearchLang = Language.ENGLISH;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,29 @@ public class HomeActivity extends AppCompatActivity
   private void initSearchView() {
     this.mSearchView = findViewById(R.id.search_view);
     this.mSearchView.setOnLogoClickListener(() -> mDrawer.openDrawer(GravityCompat.START));
+    Menu m = this.mSearchView.setMenu(R.menu.search_options);
+    this.mSearchView.setOnMenuItemClickListener(item -> {
+      if(!item.isChecked()) item.setChecked(true);
+      for(int i = 0; i < 3; i++) {
+        if(item != m.getItem(i)) {
+          if(m.getItem(i).isChecked()) m.getItem(i).setChecked(false);
+        }
+      }
+
+      switch(item.getItemId()) {
+        case R.id.search_eng:
+          mSearchLang = Language.ENGLISH;
+          break;
+        case R.id.search_mani:
+          mSearchLang = Language.MEITEI_MAYEK;
+          break;
+        case R.id.search_beng:
+          mSearchLang = Language.BENGALI;
+          break;
+      }
+
+      return true;
+    });
 
     this.mSearchView.setOnQueryTextListener(new Search.OnQueryTextListener() {
       @Override
@@ -58,7 +82,7 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
         intent.putExtra(SearchActivity.KEYWORD, query.toString());
-        intent.putExtra(SearchActivity.LANG, Language.ENGLISH);
+        intent.putExtra(SearchActivity.LANG, mSearchLang);
         startActivity(intent);
 
         return true;
