@@ -15,7 +15,7 @@ public class FavoriteAdapter extends WordListAdapter {
 
   @Override
   int getBtnImg() {
-    return R.drawable.ic_delete;
+    return R.drawable.ic_delete_black;
   }
 
   @Override
