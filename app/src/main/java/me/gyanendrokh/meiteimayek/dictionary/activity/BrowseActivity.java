@@ -7,9 +7,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +19,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.adapter.BrowseAdapter;
-import me.gyanendrokh.meiteimayek.dictionary.api.Request;
 import me.gyanendrokh.meiteimayek.dictionary.api.Words;
 import me.gyanendrokh.meiteimayek.dictionary.data.Language;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
@@ -30,7 +26,6 @@ import me.gyanendrokh.meiteimayek.dictionary.database.FavoriteDatabase;
 import me.gyanendrokh.meiteimayek.dictionary.exception.LanguageNotExistException;
 import me.gyanendrokh.meiteimayek.dictionary.fragment.BrowseDescFragment;
 import me.gyanendrokh.meiteimayek.dictionary.ui.WordList;
-
 
 public class BrowseActivity extends AppCompatActivity {
 
@@ -43,8 +38,7 @@ public class BrowseActivity extends AppCompatActivity {
   private Words mWords;
 
   private String mLang;
-  private int mStart = 1;
-  private int mLimit = 20;
+  private int mPag = 1;
 
   private Boolean mIsLoading = false;
 
@@ -71,7 +65,7 @@ public class BrowseActivity extends AppCompatActivity {
     mWordList.setOnBottomReachedListener(() -> {
       if(mIsLoading) return;
 
-      mStart += mLimit;
+      mPag++;
       mIsLoading = true;
       mResults.remove(null);
       fetchData();
@@ -82,39 +76,19 @@ public class BrowseActivity extends AppCompatActivity {
     );
 
     mListAdapter.setOnActBtnClicked(
-      position -> {
-        Word w = mResults.get(position);
-
-        me.gyanendrokh.meiteimayek.dictionary.api.Word wA = me.gyanendrokh.meiteimayek.dictionary.api.Word.getInstance(BrowseActivity.this);
-        wA.setData(w.getWord(), w.getLang());
-        wA.fetch(new Request.Listener<JSONObject>() {
-          @Override
-          public void onResponse(JSONObject response) {
-            try {
-              String desc = response.getString("description");
-              String readAs = response.getString("read_as");
-              new CompositeDisposable().add(Observable.just(FavoriteDatabase.getInstance(getApplicationContext()))
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(
-                  fav -> {
-                    fav.getDao().addWord(Word.convert(mResults.get(position).setDesc(desc).setReadAs(readAs)));
-                    runOnUiThread(() ->
-                      Toast.makeText(BrowseActivity.this, "Added to Favorite...", Toast.LENGTH_SHORT).show()
-                    );
-                  }, error -> runOnUiThread(
-                    () -> Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show()
-                  )));
-            } catch (JSONException e) {
-              Toast.makeText(BrowseActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-          }
-
-          @Override
-          public void onError(VolleyError error) {
-            Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
-          }
-        });
-      }
+      position -> new CompositeDisposable().add(Observable.just(FavoriteDatabase.getInstance(getApplicationContext()))
+        .subscribeOn(Schedulers.newThread())
+        .subscribe(
+          fav -> {
+            fav.getDao().addWord(Word.convert(mResults.get(position)));
+            runOnUiThread(() ->
+              Toast.makeText(BrowseActivity.this, "Added to Favorite...", Toast.LENGTH_SHORT).show()
+            );
+          }, error -> runOnUiThread(
+            () -> Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show()
+          )
+        )
+      )
     );
   }
 
@@ -128,37 +102,34 @@ public class BrowseActivity extends AppCompatActivity {
   }
 
   private void fetchData() {
-    mWords.setData(mLang, mStart, mLimit);
-    mWords.fetch(new Request.Listener<JSONArray>() {
-      @Override
-      public void onResponse(JSONArray response) {
-        for(int i = 0; i <= response.length(); i++) {
-          try {
-            JSONObject data = (JSONObject) response.get(i);
-            Word w = new Word(data.getInt("id"), data.getString("word"), mLang);
-            mResults.add(w);
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
-        }
+    mWords.setData(mLang, mPag);
+    mWords.fetch(response -> {
+      for (int i = 0; i <= response.length(); i++) {
+        try {
+          JSONObject data = (JSONObject) response.get(i);
 
-        mProgress.setVisibility(View.GONE);
-        if(mResults.size() == 0) {
-          mError.setText(R.string.no_data);
-        }else {
-          mResults.add(null);
-          mListAdapter.notifyDataSetChanged();
-        }
+          Word w = new Word(
+            data.getInt("id"),
+            data.getString("word"),
+            mLang
+          ).setDesc(data.getString("description"))
+            .setReadAs(data.getString("read_as"));
 
-        mIsLoading = false;
+          mResults.add(w);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
       }
 
-      @Override
-      public void onError(VolleyError error) {
-        Toast.makeText(BrowseActivity.this, String.valueOf(error.getNetworkTimeMs()), Toast.LENGTH_SHORT).show();
-        Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+      mProgress.setVisibility(View.GONE);
+      if (mResults.size() == 0) {
+        mError.setText(R.string.no_data);
+      } else {
+        mResults.add(null);
+        mListAdapter.notifyDataSetChanged();
       }
-    });
+
+      mIsLoading = false;
+    }, e -> Toast.makeText(BrowseActivity.this, e.getMessage(), Toast.LENGTH_LONG).show());
   }
-
 }

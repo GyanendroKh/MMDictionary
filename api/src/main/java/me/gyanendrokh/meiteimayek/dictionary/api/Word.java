@@ -2,9 +2,6 @@ package me.gyanendrokh.meiteimayek.dictionary.api;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
-
-import com.android.volley.AuthFailureError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,10 +9,9 @@ import org.json.JSONObject;
 public class Word extends Request {
 
   private static Word mSelf = null;
-  private Token mToken;
 
   private String mLang = "";
-  private String mWord = "";
+  private int mId = 0;
 
   public static synchronized Word getInstance(Context context) {
     if(mSelf == null) mSelf = new Word(context);
@@ -24,39 +20,32 @@ public class Word extends Request {
 
   private Word(@NonNull Context context) {
     super(context);
-    this.mToken = Token.getInstance(context);
   }
 
-  public void setData(String word, String lang) {
-    this.mWord = word;
+  public void setData(int id, String lang) {
+    this.mId = id;
     this.mLang = lang;
-  }
-
-  private String getEncodedData() {
-    JSONObject data = new JSONObject();
-    try {
-      data.put("lang", this.mLang);
-      data.put("word", this.mWord);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return Encoding.Base64.encode(data.toString());
   }
 
   @Override
   protected String setEndPoint() {
-    return "/w/g/:data".replace(":data", getEncodedData());
+    return "/g/w/:lang/:id"
+      .replace(":lang", this.mLang)
+      .replace(":id", String.valueOf(this.mId));
   }
 
-  public void fetch(Listener<org.json.JSONObject> listener) {
-    addAuthHeaders(mToken);
-    JSONObjectRequest req = super.getJsonObjReq(
-      listener::onResponse,
-      listener::onError
-    );
-
-    super.fetch(req);
+  public void fetch(OnResponseListener<JSONObject> res, OnErrorListener err) {
+    super.fetch(super.getRequest(response -> {
+      try {
+        res.onResponse(response.getJSONObject("data"));
+      }catch (JSONException e) {
+        try {
+          err.onError(new Exception(response.getString("error")));
+        } catch (JSONException e1) {
+          err.onError(e1);
+        }
+      }
+    }, err::onError));
   }
 
 }

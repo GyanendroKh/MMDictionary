@@ -10,11 +10,9 @@ import org.json.JSONObject;
 public class Words extends Request {
 
   private static Words mSelf = null;
-  private Token mToken;
 
   private String mLang = "";
-  private int mStart = 1;
-  private int mLimit = 20;
+  private int mPag = 1;
 
 
   public static synchronized Words getInstance(Context context) {
@@ -24,45 +22,36 @@ public class Words extends Request {
 
   private Words(@NonNull Context context) {
     super(context);
-    this.mToken = Token.getInstance(context);
-  }
-
-  public void setData(String lang, int start, int limit) {
-    setData(lang);
-    this.mStart = start;
-    this.mLimit = limit;
   }
 
   public void setData(String lang) {
     this.mLang = lang;
   }
 
-  private String getEncodedData() {
-    JSONObject data = new JSONObject();
-    try {
-      data.put("lang", this.mLang);
-      data.put("start", this.mStart);
-      data.put("limit", this.mLimit);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return Encoding.Base64.encode(data.toString());
+  public void setData(String lang, int pag) {
+    setData(lang);
+    this.mPag = pag;
   }
 
   @Override
   protected String setEndPoint() {
-    return "/w/g-a/:data".replace(":data", getEncodedData());
+    return "/g/w-a/:lang?pag=:pag"
+      .replace(":lang", this.mLang)
+      .replace(":pag", String.valueOf(this.mPag));
   }
 
-  public void fetch(Listener<JSONArray> listener) {
-    addAuthHeaders(mToken);
-    JSONArrayRequest req = super.getJsonArrayReq(
-      listener::onResponse,
-      listener::onError
-    );
-
-    super.fetch(req);
+  public void fetch(OnResponseListener<JSONArray> res, OnErrorListener err) {
+    super.fetch(super.getRequest(response -> {
+      try {
+        res.onResponse(response.getJSONArray("data"));
+      }catch (JSONException e) {
+        try {
+          err.onError(new Exception(response.getString("error")));
+        } catch (JSONException e1) {
+          err.onError(e1);
+        }
+      }
+    }, err::onError));
   }
 
 }

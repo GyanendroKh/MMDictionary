@@ -9,10 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
 import com.lapism.searchview.widget.SearchView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +19,6 @@ import java.util.List;
 
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.adapter.BrowseAdapter;
-import me.gyanendrokh.meiteimayek.dictionary.api.Request;
 import me.gyanendrokh.meiteimayek.dictionary.api.Search;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
 import me.gyanendrokh.meiteimayek.dictionary.fragment.BrowseDescFragment;
@@ -102,36 +99,35 @@ public class SearchActivity extends AppCompatActivity {
   }
 
   public void fetch() {
-    mSearch.setData(mKeyword, mLang);
+    mSearch.setData(mLang, mKeyword);
 
-    mSearch.fetch(new Request.Listener<JSONArray>() {
-      @Override
-      public void onResponse(JSONArray response) {
-        if(response.length() == 0) {
+    mSearch.fetch(response ->  {
+      if(response.length() == 0) {
+        mProgressBar.setVisibility(View.GONE);
+        mNoResultText.setVisibility(View.VISIBLE);
+      }else mNoResultText.setVisibility(View.INVISIBLE);
+
+
+      for(int i = 0; i < response.length(); i++) {
+        try {
+          JSONObject obj = (JSONObject) response.get(i);
+          mResult.add(
+            new Word(
+              obj.getInt("id"),
+              obj.getString("word"),
+              mLang
+            ).setDesc(obj.getString("description"))
+            .setReadAs(obj.getString("read_as"))
+          );
+
           mProgressBar.setVisibility(View.GONE);
-          mNoResultText.setVisibility(View.VISIBLE);
-        }else mNoResultText.setVisibility(View.INVISIBLE);
 
-
-        for(int i = 0; i < response.length(); i++) {
-          try {
-            JSONObject obj = (JSONObject) response.get(i);
-            mResult.add(new Word(obj.getInt("id"), obj.getString("word"), mLang));
-
-            mProgressBar.setVisibility(View.GONE);
-
-            mAdapter.notifyDataSetChanged();
-          } catch (JSONException e) {
-            e.printStackTrace();
-          }
+          mAdapter.notifyDataSetChanged();
+        } catch (JSONException e) {
+          e.printStackTrace();
         }
       }
-
-      @Override
-      public void onError(VolleyError error) {
-        Toast.makeText(SearchActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
-      }
-    });
+    }, e -> Toast.makeText(SearchActivity.this, e.getMessage(), Toast.LENGTH_LONG).show());
   }
 
 }
