@@ -11,6 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.data.Word;
 
@@ -25,6 +29,7 @@ public abstract class WordDescFragment extends BottomSheetDialogFragment {
   private TextView mViewReadAs;
   private ProgressBar mProgressBar;
   private FloatingActionButton mActBtn;
+  private AdView mAdView;
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,9 +55,11 @@ public abstract class WordDescFragment extends BottomSheetDialogFragment {
     this.mViewReadAs = view.findViewById(R.id.word_desc_read_as);
     this.mProgressBar = view.findViewById(R.id.word_desc_progress);
     this.mActBtn = view.findViewById(R.id.sheet_action_btn);
+    this.mAdView = view.findViewById(R.id.adView);
 
     setData();
     init();
+    initAd();
     return view;
   }
 
@@ -73,6 +80,12 @@ public abstract class WordDescFragment extends BottomSheetDialogFragment {
   }
 
   public abstract void init();
+
+  private void initAd() {
+    AdRequest adReq = new AdRequest.Builder().build();
+
+    this.mAdView.loadAd(adReq);
+  }
 
   public void setLoaded() {
     this.mProgressBar.setVisibility(View.GONE);
