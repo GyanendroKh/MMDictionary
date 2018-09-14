@@ -36,10 +36,13 @@ public class SearchActivity extends AppCompatActivity {
 
   private String mKeyword;
   private String mLang;
+  private int mPadding = 1;
 
   private Search mSearch;
   private List<Word> mResult;
   private BrowseAdapter mAdapter;
+
+  private boolean mIsLoading = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -96,17 +99,27 @@ public class SearchActivity extends AppCompatActivity {
     mAdapter.setOnItemClickListener(
       (view, position) -> BrowseDescFragment.createFragment(mAdapter.getItem(position)).show(getSupportFragmentManager(), getClass().getName())
     );
+
+    mListView.setOnBottomReachedListener(() -> {
+      if(!mIsLoading) {
+        mPadding++;
+
+        mIsLoading = true;
+        mResult.remove(null);
+
+        fetch();
+      }
+    });
   }
 
   public void fetch() {
-    mSearch.setData(mLang, mKeyword);
+    mSearch.setData(mLang, mKeyword, mPadding);
 
     mSearch.fetch(response ->  {
-      if(response.length() == 0) {
-        mProgressBar.setVisibility(View.GONE);
-        mNoResultText.setVisibility(View.VISIBLE);
-      }else mNoResultText.setVisibility(View.INVISIBLE);
+      mProgressBar.setVisibility(View.GONE);
 
+      if(response.length() == 0) mNoResultText.setVisibility(View.VISIBLE);
+      else mNoResultText.setVisibility(View.INVISIBLE);
 
       for(int i = 0; i < response.length(); i++) {
         try {
@@ -121,13 +134,17 @@ public class SearchActivity extends AppCompatActivity {
           );
 
           mProgressBar.setVisibility(View.GONE);
-
-          mAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
           e.printStackTrace();
         }
       }
-    }, e -> Toast.makeText(SearchActivity.this, e.getMessage(), Toast.LENGTH_LONG).show());
+
+      if(mResult.size() != 0) mResult.add(null);
+
+      mAdapter.notifyDataSetChanged();
+
+      mIsLoading = false;
+    }, e -> Toast.makeText(SearchActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show());
   }
 
 }
