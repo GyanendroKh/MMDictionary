@@ -85,7 +85,7 @@ public class BrowseActivity extends AppCompatActivity {
               Toast.makeText(BrowseActivity.this, "Added to Favorite...", Toast.LENGTH_SHORT).show()
             );
           }, error -> runOnUiThread(
-            () -> Toast.makeText(BrowseActivity.this, error.getMessage(), Toast.LENGTH_LONG).show()
+            () -> Toast.makeText(BrowseActivity.this, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show()
           )
         )
       )
@@ -130,6 +130,10 @@ public class BrowseActivity extends AppCompatActivity {
       }
 
       mIsLoading = false;
-    }, e -> Toast.makeText(BrowseActivity.this, e.getMessage(), Toast.LENGTH_LONG).show());
+    }, e -> {
+      mProgress.setVisibility(View.GONE);
+      mError.setVisibility(View.VISIBLE);
+      mError.setText(R.string.unable_to_fetch_data);
+    });
   }
 }

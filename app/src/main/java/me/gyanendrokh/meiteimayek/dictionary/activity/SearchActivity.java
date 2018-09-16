@@ -7,7 +7,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lapism.searchview.widget.SearchView;
 
@@ -152,7 +151,11 @@ public class SearchActivity extends AppCompatActivity {
       mAdapter.notifyDataSetChanged();
 
       mIsLoading = false;
-    }, e -> Toast.makeText(SearchActivity.this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show());
+    }, e -> {
+      mProgressBar.setVisibility(View.GONE);
+      mNoResultText.setVisibility(View.VISIBLE);
+      mNoResultText.setText(R.string.unable_to_fetch_data);
+    });
   }
 
 }

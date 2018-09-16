@@ -31,4 +31,7 @@
   <string name="no_data">There is no data right now…</string>
   <string name="no_result_found">No Result Found…</string>
   <string name="there_is_nothing_in_your_favorite">There is nothing in your favorite.</string>
+
+  <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+  <string name="unable_to_fetch_data">Unable to fetch data at the moment.</string>
 </resources>
