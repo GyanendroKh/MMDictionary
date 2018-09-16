@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.ads.MobileAds;
+
 import me.gyanendrokh.meiteimayek.dictionary.R;
 
 public class SplashActivity extends AppCompatActivity {
@@ -14,7 +16,8 @@ public class SplashActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
-    new Handler().postDelayed(this::startHome, 1200);
+    new Handler().postDelayed(this::startHome, 800);
+    MobileAds.initialize(getApplicationContext(), getResources().getString(R.string.banner_ad_unit_id));
   }
 
   private void startHome() {

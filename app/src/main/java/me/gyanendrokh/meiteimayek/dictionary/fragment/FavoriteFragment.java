@@ -11,6 +11,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ public class FavoriteFragment extends Fragment {
   private WordList mListView;
   private ProgressBar mProgressBar;
   private TextView mTextNone;
+  private AdView mAdView;
 
   private List<me.gyanendrokh.meiteimayek.dictionary.data.Word> mResults = new ArrayList<>();
   private FavoriteAdapter mAdapter = new FavoriteAdapter(mResults);
@@ -45,6 +49,7 @@ public class FavoriteFragment extends Fragment {
     mListView = view.findViewById(R.id.favorite_list);
     mProgressBar = view.findViewById(R.id.favorite_progress);
     mTextNone = view.findViewById(R.id.favorite_none);
+    mAdView = view.findViewById(R.id.adView);
 
     mFavDatabase = FavoriteDatabase.getInstance(getActivity()).getDao();
 
@@ -87,6 +92,8 @@ public class FavoriteFragment extends Fragment {
     mAdapter.setOnItemClickListener((view, position) ->
       FavoriteDescFragment.createFragment(mResults.get(position)).show(getActivity().getSupportFragmentManager(), getClass().getName())
     );
+
+    mAdView.loadAd(new AdRequest.Builder().build());
   }
 
 }

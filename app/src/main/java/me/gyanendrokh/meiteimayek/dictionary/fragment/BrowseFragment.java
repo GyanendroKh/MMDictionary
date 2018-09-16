@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.activity.BrowseActivity;
 import me.gyanendrokh.meiteimayek.dictionary.data.Language;
@@ -23,6 +26,7 @@ public class BrowseFragment extends Fragment implements View.OnClickListener {
     view.findViewById(R.id.browse_english).setOnClickListener(this);
     view.findViewById(R.id.browse_mani).setOnClickListener(this);
     view.findViewById(R.id.browse_bengali).setOnClickListener(this);
+    ((AdView) view.findViewById(R.id.adView)).loadAd(new AdRequest.Builder().build());
 
     return view;
   }
