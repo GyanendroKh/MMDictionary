@@ -36,13 +36,14 @@ public class SearchActivity extends AppCompatActivity {
 
   private String mKeyword;
   private String mLang;
-  private int mPadding = 1;
+  private int mPagination = 1;
 
   private Search mSearch;
   private List<Word> mResult;
   private BrowseAdapter mAdapter;
 
   private boolean mIsLoading = false;
+  private boolean mIsLast = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,9 @@ public class SearchActivity extends AppCompatActivity {
         mResult.clear();
         mSearchView.close();
 
-        mProgressBar.setVisibility(View.VISIBLE);
+        mPagination = 1;
+        mIsLast = false;
+
         fetch();
 
         return true;
@@ -101,45 +104,50 @@ public class SearchActivity extends AppCompatActivity {
     );
 
     mListView.setOnBottomReachedListener(() -> {
-      if(!mIsLoading) {
-        mPadding++;
+      if(mIsLoading || mIsLast) return;
 
-        mIsLoading = true;
-        mResult.remove(null);
+      mPagination++;
 
-        fetch();
-      }
+      mIsLoading = true;
+      mResult.remove(null);
+
+      fetch();
     });
   }
 
   public void fetch() {
-    mSearch.setData(mLang, mKeyword, mPadding);
+    mNoResultText.setVisibility(View.GONE);
+    if(mPagination == 1) mProgressBar.setVisibility(View.VISIBLE);
+
+    mSearch.setData(mLang, mKeyword, mPagination);
 
     mSearch.fetch(response ->  {
       mProgressBar.setVisibility(View.GONE);
 
-      if(response.length() == 0) mNoResultText.setVisibility(View.VISIBLE);
-      else mNoResultText.setVisibility(View.INVISIBLE);
-
-      for(int i = 0; i < response.length(); i++) {
-        try {
-          JSONObject obj = (JSONObject) response.get(i);
-          mResult.add(
-            new Word(
-              obj.getInt("id"),
-              obj.getString("word"),
-              mLang
-            ).setDesc(obj.getString("description"))
-            .setReadAs(obj.getString("read_as"))
-          );
-
-          mProgressBar.setVisibility(View.GONE);
-        } catch (JSONException e) {
-          e.printStackTrace();
+      if(response.length() == 0) {
+        if(mPagination == 1) mNoResultText.setVisibility(View.VISIBLE);
+        mIsLast = true;
+      }else {
+        for(int i = 0; i < response.length(); i++) {
+          try {
+            JSONObject obj = (JSONObject) response.get(i);
+            mResult.add(
+              new Word(
+                obj.getInt("id"),
+                obj.getString("word"),
+                mLang
+              ).setDesc(obj.getString("description"))
+                .setReadAs(obj.getString("read_as"))
+            );
+          } catch (JSONException e) {
+            e.printStackTrace();
+          }
         }
-      }
 
-      if(mResult.size() != 0) mResult.add(null);
+        if(mResult.contains(null))
+          mResult.remove(null);
+        mResult.add(null);
+      }
 
       mAdapter.notifyDataSetChanged();
 
