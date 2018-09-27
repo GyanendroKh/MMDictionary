@@ -16,9 +16,14 @@ import android.widget.Toast;
 import com.lapism.searchview.Search;
 import com.lapism.searchview.widget.SearchView;
 
+import org.json.JSONException;
+
+import me.gyanendrokh.meiteimayek.dictionary.BuildConfig;
 import me.gyanendrokh.meiteimayek.dictionary.R;
 import me.gyanendrokh.meiteimayek.dictionary.adapter.HomePagerAdapter;
+import me.gyanendrokh.meiteimayek.dictionary.api.Version;
 import me.gyanendrokh.meiteimayek.dictionary.data.Language;
+import me.gyanendrokh.meiteimayek.dictionary.fragment.VersionUpdateFragment;
 
 public class HomeActivity extends AppCompatActivity
   implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,6 +40,7 @@ public class HomeActivity extends AppCompatActivity
     setContentView(R.layout.activity_home);
 
     initView();
+    checkVersion();
   }
 
   private void initView() {
@@ -131,8 +137,37 @@ public class HomeActivity extends AppCompatActivity
       case R.id.nav_about:
         startActivity(new Intent(getApplicationContext(), AboutMeActivity.class));
         return false;
+      case R.id.nav_share:
+        share();
+        return false;
     }
 
     return true;
+  }
+
+  public void checkVersion() {
+    Version ver = Version.getInstance(HomeActivity.this);
+
+    ver.fetch(res -> {
+      try {
+        int versionCode = res.getInt("code");
+
+        if(versionCode > BuildConfig.VERSION_CODE) {
+          VersionUpdateFragment.createFragment().show(getSupportFragmentManager(), VersionUpdateFragment.class.getSimpleName());
+        }
+
+      }catch(JSONException e) {
+        e.printStackTrace();
+      }
+    }, err -> Toast.makeText(HomeActivity.this, err.getLocalizedMessage(), Toast.LENGTH_SHORT).show());
+  }
+
+  private void share() {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_TEXT, "https://meiteimayek.gyanendrokh.me/dictionary");
+    intent.putExtra(Intent.EXTRA_TITLE, "Check this out");
+
+    startActivity(Intent.createChooser(intent, "Share"));
   }
 }
