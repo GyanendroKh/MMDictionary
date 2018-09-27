@@ -3,7 +3,7 @@
 
   <string name="app_full_name">Meitei Mayek Dictionary</string>
 
-  <string name="version">v0.0.1</string>
+  <string name="version">v0.1.0</string>
 
   <string name="navigation_drawer_open">Open navigation drawer</string>
   <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -32,6 +32,6 @@
   <string name="no_result_found">No Result Found…</string>
   <string name="there_is_nothing_in_your_favorite">There is nothing in your favorite.</string>
 
-  <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+  <string name="banner_ad_unit_id">ca-app-pub-7227836186229955/1889335709</string>
   <string name="unable_to_fetch_data">Unable to fetch data at the moment.</string>
 </resources>
